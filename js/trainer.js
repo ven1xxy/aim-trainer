@@ -110,6 +110,7 @@ function draw() {
       newTargets.push(targets[i]);
     } else {
       newTargets.push(createRandomTarget());
+      playSound(missAudio);
     }
   }
 
