@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R.A.T - Reginald's Aim Trainer</title>
+    <link
+      rel="shortcut icon"
+      href="./assets/images/icon.png"
+      type="image/x-icon"
+    />
+    <!-- Always put this first. -->
+    <script src="./js/gamemodes.js"></script>
+
+    <script src="./js/target.js"></script>
+    <script src="./js/trainer.js"></script>
+    <link rel="stylesheet" href="./styles/main.css" />
+  </head>
+  <body>
+    <div id="content">
+      <div class="select-container">
+        <select name="gamemodes" id="gamemodes">
+          <option value="standard" selected="selected">Standard</option>
+          <option value="singular">One-on-One</option>
+          <option value="precision">Precise</option>
+          <option value="forgiving">Too Easy</option>
+        </select>
+      </div>
+      <canvas width="800" height="600"></canvas>
+    </div>
+    <footer>
+      <span>Built with 💖 by ven1xxy</span>
+    </footer>
+  </body>
+</html>
