@@ -12,12 +12,12 @@ we do this to sort of compensate for dumbass cursors.
 var lenience = 2;
 
 var targetImage = new Image();
-targetImage.src = "../assets/images/target.png";
+targetImage.src = "./assets/images/target.png";
 
-var hitAudio = new Audio("../assets/sounds/hit.wav");
-var missAudio = new Audio("../assets/sounds/miss.wav");
-var interactionAudio = new Audio("../assets/sounds/interaction.wav");
-var sliderAudio = new Audio("../assets/sounds/slider.wav");
+var hitAudio = new Audio("./assets/sounds/hit.wav");
+var missAudio = new Audio("./assets/sounds/miss.wav");
+var interactionAudio = new Audio("./assets/sounds/interaction.wav");
+var sliderAudio = new Audio("./assets/sounds/slider.wav");
 
 var backgroundColor = "#262335";
 
