@@ -1,9 +1,60 @@
-var gameOptions = gameModes["standard"];
+var difficulties = {
+  unlosable: {
+    targetCount: 3,
+    targetWidth: 50,
+    targetHeight: 50,
+    targetScaleSpeed: -0.5,
+  },
+
+  easy: {
+    targetCount: 1,
+    targetWidth: 100,
+    targetHeight: 100,
+    targetScaleSpeed: 0.5,
+  },
+
+  medium: {
+    targetCount: 4,
+    targetWidth: 50,
+    targetHeight: 50,
+    targetScaleSpeed: 0.1,
+  },
+
+  hard: {
+    targetCount: 4,
+    targetWidth: 45,
+    targetHeight: 45,
+    targetScaleSpeed: 0.2,
+  },
+
+  nightmare: {
+    targetCount: 4,
+    targetWidth: 35,
+    targetHeight: 35,
+    targetScaleSpeed: 0.25,
+  },
+
+  dead: {
+    targetCount: 2,
+    targetWidth: 25,
+    targetHeight: 25,
+    targetScaleSpeed: 0.4,
+  },
+};
+
+var gameOptions = difficulties["medium"];
+
+var dpr = window.devicePixelRatio || 1; // Used for DPI Scaling.
+
+var sampling = 1;
 
 var canvas;
 var context;
+var rect;
 
-var targets;
+var targets = [];
+
+var lastDraw = Date.now();
 
 /* 
 2px of tolerance, so hitboxes are actually 2px larger on every side compared to the texture
@@ -22,15 +73,32 @@ var sliderAudio = new Audio("./assets/sounds/slider.wav");
 var backgroundColor = "#262335";
 
 window.onload = function (e) {
+  /*  "No super" modals */
+  var modals = document.getElementsByClassName("modal");
+  for (let i = 0; i < modals.length; i++) {
+    const modal = modals[i];
+    modal.onclick = function (e) {
+      noSuper(e);
+    };
+  }
+
   canvas = document.getElementsByTagName("canvas")[0];
   context = canvas.getContext("2d");
 
-  canvas.onclick = function (e) {
-    var rect = e.target.getBoundingClientRect();
+  // Initialize renderer.
+  initRenderer();
+
+  canvas.onmousedown = function (e) {
+    rect = canvas.getBoundingClientRect();
+
     var x = e.clientX - rect.left; // x position within the element.
     var y = e.clientY - rect.top; // y position within the element.
 
     handleClick(x, y);
+  };
+
+  window.onresize = function (e) {
+    resizeCanvas();
   };
 
   var modeSelector = document.getElementsByTagName("select")[0];
@@ -40,7 +108,7 @@ window.onload = function (e) {
   };
 
   modeSelector.onchange = function (e) {
-    gameOptions = gameModes[modeSelector.value];
+    gameOptions = difficulties[modeSelector.value];
     playSound(sliderAudio);
     beginGame();
   };
@@ -51,7 +119,7 @@ window.onload = function (e) {
 
 function populate() {
   for (let i = 0; i < gameOptions.targetCount; i++) {
-    targets.push(createRandomTarget());
+    targets.push(createRandomTarget(0));
   }
 }
 
@@ -60,7 +128,8 @@ function handleClick(x, y) {
 
   var hit = false;
 
-  for (let i = 0; i < targets.length; i++) {
+  // Reversed, so the target on top is checked first.
+  for (let i = targets.length - 1; i >= 0; i--) {
     const target = targets[i];
 
     var drawTarget = target.calculateDrawTarget();
@@ -74,11 +143,11 @@ function handleClick(x, y) {
     ) {
       playSound(hitAudio);
       hit = true;
-      newTargets.push(createRandomTarget());
+      newTargets[i] = createRandomTarget(0);
       continue;
     }
 
-    newTargets.push(target);
+    newTargets[i] = target;
   }
 
   if (!hit) {
@@ -88,28 +157,23 @@ function handleClick(x, y) {
   targets = newTargets;
 }
 
-var lastDraw;
-
 function draw() {
   var now = Date.now();
   var deltaTime = (now - lastDraw) / 1000;
 
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = backgroundColor;
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "#ffffff";
+  clearCanvas();
 
   var newTargets = [];
 
   for (let i = 0; i < targets.length; i++) {
-    drawTarget(targets[i]);
+    drawTarget(targets[i], targetImage);
 
     targets[i].scale -= gameOptions.targetScaleSpeed * deltaTime;
 
     if (targets[i].scale > 0) {
       newTargets.push(targets[i]);
     } else {
-      newTargets.push(createRandomTarget());
+      newTargets.push(createRandomTarget(0));
       playSound(missAudio);
     }
   }
@@ -128,17 +192,6 @@ function playSound(audio) {
   }
 }
 
-function drawTarget(target) {
-  var drawTarget = target.calculateDrawTarget();
-  context.drawImage(
-    targetImage,
-    drawTarget.x,
-    drawTarget.y,
-    drawTarget.width,
-    drawTarget.height
-  );
-}
-
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -147,8 +200,8 @@ function getRandomInt(min, max) {
 
 function createRandomTarget(depth = 0) {
   var target = new Target(
-    getRandomInt(0, canvas.width - 100),
-    getRandomInt(0, canvas.height - 100),
+    getRandomInt(0, canvas.width / dpr - 100),
+    getRandomInt(0, canvas.height / dpr - 100),
     gameOptions.targetWidth,
     gameOptions.targetHeight,
     1
@@ -157,19 +210,17 @@ function createRandomTarget(depth = 0) {
   //  Avoid spawning targets inside each other.
   if (depth < 5) {
     // stop trying after 5 retries
-    targets.forEach((compareTarget) => {
+    for (let i = 0; i < targets.length; i++) {
+      const compareTarget = targets[i];
       if (
         target.x >= compareTarget.x - compareTarget.width &&
-        target.x <=
-          compareTarget.x + compareTarget.width + compareTarget.width &&
+        target.x <= compareTarget.x + compareTarget.width &&
         target.y >= compareTarget.y - compareTarget.height &&
-        target.y <=
-          compareTarget.y + compareTarget.height + compareTarget.height
+        target.y <= compareTarget.y + compareTarget.height
       ) {
-        console.log("collision prevented.");
         return createRandomTarget(depth + 1);
       }
-    });
+    }
   } else {
     console.log("couldn't prevent collision. (too many retries)");
   }
@@ -181,4 +232,26 @@ function beginGame() {
   targets = [];
 
   populate();
+}
+
+function showModal(modalID) {
+  var modalsContainer = document.getElementById("modals");
+  modalsContainer.className = "";
+  var graphicsModal = document.getElementById(modalID);
+  graphicsModal.className = "modal";
+}
+
+function hideModals() {
+  // Hides *all* modals.
+  var modalsContainer = document.getElementById("modals");
+  modalsContainer.className = "hide";
+  var modals = document.getElementsByClassName("modal");
+  for (let i = 0; i < modals.length; i++) {
+    const modal = modals[i];
+    modal.className = "modal hide";
+  }
+}
+
+function noSuper(e) {
+  e.stopPropagation();
 }

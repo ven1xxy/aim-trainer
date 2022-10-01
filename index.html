@@ -3,34 +3,85 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>R.A.T - Reginald's Aim Trainer</title>
     <link
       rel="shortcut icon"
       href="./assets/images/icon.png"
       type="image/x-icon"
     />
-    <!-- Always put this first. -->
-    <script src="./js/gamemodes.js"></script>
-
+    <!-- Order is important. -->
+    <script src="./js/renderer.js"></script>
     <script src="./js/target.js"></script>
-    <script src="./js/trainer.js"></script>
+    <script src="./js/classic.js"></script>
     <link rel="stylesheet" href="./styles/main.css" />
   </head>
   <body>
     <div id="content">
-      <div class="select-container">
-        <select name="gamemodes" id="gamemodes">
-          <option value="standard" selected="selected">Standard</option>
-          <option value="singular">One-on-One</option>
-          <option value="precision">Precise</option>
-          <option value="forgiving">Too Easy</option>
-        </select>
+      <div class="settings">
+        <div class="select-container">
+          <select name="gamemodes" id="gamemodes">
+            <option value="unlosable">I'm too young to die</option>
+            <option value="easy">BASIC</option>
+            <option value="medium" selected="selected">Turbo Clicker</option>
+            <option value="hard">ULTRACLICK</option>
+            <option value="nightmare">True Target Hunter</option>
+            <option value="dead">Click With the Dead</option>
+          </select>
+        </div>
+        <button onclick="showModal('graphics-modal')">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-monitor"
+          >
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+            <path d="M8 21h8m-4-4v4" />
+          </svg>
+        </button>
+        <button onclick="showModal('settings-modal')">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-settings"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+            />
+          </svg>
+        </button>
       </div>
       <canvas width="800" height="600"></canvas>
     </div>
+    <div id="modals" class="hide" onclick="hideModals()">
+      <div id="graphics-modal" class="modal hide">
+        <div class="top">
+          <button onclick="hideModals()">hide graphics</button>
+        </div>
+        <span>work in progress</span>
+      </div>
+      <div id="settings-modal" class="modal hide">
+        <div class="top">
+          <button onclick="hideModals()">hide settings</button>
+        </div>
+        <span>work in progress</span>
+      </div>
+    </div>
     <footer>
       <span>Built with 💖 by ven1xxy</span>
+      <span class="version">● rat.ver.a.01</span>
     </footer>
   </body>
 </html>
