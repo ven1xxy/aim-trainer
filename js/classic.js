@@ -83,14 +83,12 @@ window.onload = function (e) {
   }
 
   canvas = document.getElementsByTagName("canvas")[0];
-  context = canvas.getContext("2d");
+  context = canvas.getContext("2d", { alpha: false });
 
   // Initialize renderer.
   initRenderer();
 
   canvas.onmousedown = function (e) {
-    rect = canvas.getBoundingClientRect();
-
     var x = e.clientX - rect.left; // x position within the element.
     var y = e.clientY - rect.top; // y position within the element.
 
@@ -99,6 +97,11 @@ window.onload = function (e) {
 
   window.onresize = function (e) {
     resizeCanvas();
+  };
+
+  window.onscroll = function (e) {
+    // Recalculate rect.
+    rect = canvas.getBoundingClientRect();
   };
 
   var modeSelector = document.getElementsByTagName("select")[0];
@@ -162,6 +165,8 @@ function draw() {
   var deltaTime = (now - lastDraw) / 1000;
 
   clearCanvas();
+
+  drawFPS(deltaTime);
 
   var newTargets = [];
 

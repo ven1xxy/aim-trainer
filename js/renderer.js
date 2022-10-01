@@ -2,6 +2,7 @@ function initRenderer() {
   resizeCanvas();
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
+  context.textBaseline = "top";
 }
 
 function drawTarget(target, texture) {
@@ -47,8 +48,14 @@ function handleDPR() {
 }
 
 function clearCanvas() {
-  context.clearRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = backgroundColor;
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = "#ffffff";
+  /* TODO: Try optimizing this, using seperate layers for background & game,
+  also grid background */
+}
+
+function drawFPS(frameTime) {
+  var fps = Math.round(1 / frameTime);
+  context.fillText(`${fps} FPS (${frameTime * 1000} ms)`, 16, 16);
 }
